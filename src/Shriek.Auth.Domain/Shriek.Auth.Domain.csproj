@@ -5,7 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shriek" Version="1.0.0-preview-10049" />
+    <PackageReference Include="Shriek" Version="1.0.0-preview-10050" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shriek.Auth.Commands\Shriek.Auth.Commands.csproj" />
   </ItemGroup>
 
 </Project>

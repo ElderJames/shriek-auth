@@ -10,11 +10,6 @@ namespace Shriek.Auth.Domain
         #region property
 
         /// <summary>
-        /// 如果实体（带Guid）被创建后，该值就是DB生成的值
-        /// </summary>
-        public int Id { get; protected set; }
-
-        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CreateDate { get; protected set; }

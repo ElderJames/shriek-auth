@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Shriek.Auth.Commands;
+using Shriek.Events;
+using Shriek.Exceptions;
+using System;
 
 namespace Shriek.Auth.Domain.User
 {
-    public class UserAggregateRoot : AggregateRoot<Guid>
+    public class UserAggregateRoot : AggregateRoot<Guid>, IHandle<UserCreatedEvent>
     {
         #region properties
 
@@ -24,7 +27,7 @@ namespace Shriek.Auth.Domain.User
         /// <summary>
         /// 邮箱地址
         /// </summary>
-        public string EMail { get; protected set; }
+        public string Email { get; protected set; }
 
         /// <summary>
         /// 手机号
@@ -55,14 +58,45 @@ namespace Shriek.Auth.Domain.User
 
         #region ctors
 
-        protected UserAggregateRoot(Guid aggregateId) : base(aggregateId)
+        public UserAggregateRoot(Guid aggregateId, CreateUserCommand command) : base(aggregateId)
+        {
+            if (string.IsNullOrEmpty(command.UserName))
+                throw new DomainException("用户名为空");
+
+            if (string.IsNullOrEmpty(command.Password))
+                throw new DomainException("密码为空");
+
+            if (string.IsNullOrEmpty(command.Email) && string.IsNullOrEmpty(command.MobileNumber))
+                throw new DomainException("email和手机号都为空");
+
+            ApplyChange(new UserCreatedEvent
+            {
+                AggregateId = this.AggregateId,
+                UserName = command.UserName,
+                Password = command.Password,
+                Email = command.Email,
+                MobileNumber = command.MobileNumber,
+                Version = 0,
+                Timestamp = DateTime.Now
+            });
+        }
+
+        public UserAggregateRoot() : base(Guid.Empty)
         {
         }
 
-        protected UserAggregateRoot() : base(Guid.Empty)
-        {
-        }
+
 
         #endregion ctors
+
+        public void Handle(UserCreatedEvent e)
+        {
+            this.UserName = e.UserName;
+            this.Password = e.Password;
+            this.Email = e.Email;
+            this.MobileNumber = e.MobileNumber;
+            this.CreateDate = e.Timestamp;
+            this.Creator = "sys";
+        }
     }
 }
