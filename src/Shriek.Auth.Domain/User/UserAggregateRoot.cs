@@ -1,11 +1,14 @@
-﻿using Shriek.Auth.Commands;
+﻿using Shriek.Auth.Commands.User;
+using Shriek.Auth.Commands;
 using Shriek.Events;
 using Shriek.Exceptions;
 using System;
 
 namespace Shriek.Auth.Domain.User
 {
-    public class UserAggregateRoot : AggregateRoot<Guid>, IHandle<UserCreatedEvent>
+    public class UserAggregateRoot : AggregateRoot<Guid>,
+        IHandle<UserCreatedEvent>,
+        IHandle<UserChangedEvent>
     {
         #region properties
 
@@ -75,8 +78,8 @@ namespace Shriek.Auth.Domain.User
                 UserName = command.UserName,
                 Password = command.Password,
                 Email = command.Email,
+                DepartmentId = command.DepartmentId,
                 MobileNumber = command.MobileNumber,
-                Version = 0,
                 Timestamp = DateTime.Now
             });
         }
@@ -85,9 +88,9 @@ namespace Shriek.Auth.Domain.User
         {
         }
 
-
-
         #endregion ctors
+
+        #region create
 
         public void Handle(UserCreatedEvent e)
         {
@@ -95,8 +98,45 @@ namespace Shriek.Auth.Domain.User
             this.Password = e.Password;
             this.Email = e.Email;
             this.MobileNumber = e.MobileNumber;
+            this.DepartmentId = e.DepartmentId;
             this.CreateDate = e.Timestamp;
             this.Creator = "sys";
         }
+
+        #endregion create
+
+        #region change
+
+        public void Change(ChangeUserCommand command)
+        {
+            if (string.IsNullOrEmpty(command.Password))
+                throw new DomainException("密码为空");
+
+            if (string.IsNullOrEmpty(command.Email) && string.IsNullOrEmpty(command.MobileNumber))
+                throw new DomainException("email和手机号都为空");
+
+            this.ApplyChange(new UserChangedEvent
+            {
+                AggregateId = this.AggregateId,
+
+                Password = command.Password,
+                Email = command.Email,
+                MobileNumber = command.MobileNumber,
+                DepartmentId = command.DepartmentId,
+                Timestamp = DateTime.Now,
+            });
+        }
+
+        public void Handle(UserChangedEvent e)
+        {
+            this.Password = e.Password;
+            this.Email = e.Email;
+            this.MobileNumber = e.MobileNumber;
+            this.DepartmentId = e.DepartmentId;
+            this.EditDate = e.Timestamp;
+            this.Creator = "sys";
+        }
+
+        #endregion change
     }
 }

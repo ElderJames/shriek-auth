@@ -24,5 +24,10 @@ namespace Shriek.Auth.Domain.User
         /// 手机号
         /// </summary>
         public string MobileNumber { get; set; }
+
+        /// <summary>
+        /// 所属部门实体
+        /// </summary>
+        public Guid DepartmentId { get; set; }
     }
 }

@@ -1,23 +1,10 @@
-﻿using System;
-using Shriek.Commands;
+﻿using Shriek.Events;
+using System;
 
-namespace Shriek.Auth.Commands
+namespace Shriek.Auth.Domain.User
 {
-    public class CreateUserCommand : Command<Guid>
+    public class UserChangedEvent : Event<Guid>
     {
-        public CreateUserCommand(Guid id) : base(id)
-        {
-        }
-
-        public CreateUserCommand() : base(Guid.Empty)
-        {
-        }
-
-        /// <summary>
-        /// 用户名
-        /// </summary>
-        public string UserName { get; set; }
-
         /// <summary>
         /// 密码
         /// </summary>

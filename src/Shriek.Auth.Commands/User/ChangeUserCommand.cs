@@ -1,22 +1,17 @@
-﻿using System;
-using Shriek.Commands;
+﻿using Shriek.Commands;
+using System;
 
-namespace Shriek.Auth.Commands
+namespace Shriek.Auth.Commands.User
 {
-    public class CreateUserCommand : Command<Guid>
+    public class ChangeUserCommand : Command<Guid>
     {
-        public CreateUserCommand(Guid id) : base(id)
+        public ChangeUserCommand(Guid id) : base(id)
         {
         }
 
-        public CreateUserCommand() : base(Guid.Empty)
+        public ChangeUserCommand() : base(Guid.Empty)
         {
         }
-
-        /// <summary>
-        /// 用户名
-        /// </summary>
-        public string UserName { get; set; }
 
         /// <summary>
         /// 密码
