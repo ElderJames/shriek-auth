@@ -1,8 +1,12 @@
 ﻿using System;
+using Shriek.Auth.Commands.Department;
+using Shriek.Events;
+using Shriek.Exceptions;
 
 namespace Shriek.Auth.Domain.Department
 {
-    public class DepartmentAggregateRoot : AggregateRoot<Guid>
+    public class DepartmentAggregateRoot : AggregateRoot<Guid>,
+        IEventHandler<DepartmentCreatedEvent>
     {
         #region properties
 
@@ -40,14 +44,44 @@ namespace Shriek.Auth.Domain.Department
 
         #region ctors
 
-        protected DepartmentAggregateRoot(Guid aggregateId) : base(aggregateId)
+        public DepartmentAggregateRoot(CreateDepartmentCommand command) : base(command.AggregateId)
         {
+            if (string.IsNullOrEmpty(command.Name))
+                throw new DomainException("部门名称不能为空");
+
+            ApplyChange(new DepartmentCreatedEvent()
+            {
+                AggregateId = this.AggregateId,
+                Name = command.Name,
+                Code = command.Code,
+                ContactNumber = command.ContactNumber,
+                Manager = command.Manager,
+                ParentId = command.ParentId,
+                Remarks = command.Remarks,
+                Timestamp = DateTime.Now,
+            });
         }
 
-        protected DepartmentAggregateRoot() : base(Guid.Empty)
+        public DepartmentAggregateRoot() : base(Guid.Empty)
         {
         }
 
         #endregion ctors
+
+        #region create
+
+        public void Handle(DepartmentCreatedEvent e)
+        {
+            this.Name = e.Name;
+            this.Code = e.Code;
+            this.ContactNumber = e.ContactNumber;
+            this.Manager = e.Manager;
+            this.ParentId = e.ParentId;
+            this.Remarks = e.Remarks;
+            this.CreateDate = e.Timestamp;
+            this.Creator = "sys";
+        }
+
+        #endregion create
     }
 }
